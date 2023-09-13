@@ -3,7 +3,7 @@ import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:flutter/material.dart';
 
-class MovieHorizontalListView extends StatelessWidget {
+class MovieHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
   final String? title;
   final String? subTitle;
@@ -17,25 +17,59 @@ class MovieHorizontalListView extends StatelessWidget {
       this.loadNextPage});
 
   @override
+  State<MovieHorizontalListView> createState() => _MovieHorizontalListViewState();
+}
+
+class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
+
+  final scrollController = ScrollController();
+
+  // Configuracionde inicial antes de montar el widget
+  // En el caso de manejar controladores se deben definir los eventos principales 
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if( widget.loadNextPage == null ) return ;
+
+      if( (scrollController.position.pixels + 200) >= scrollController.position.maxScrollExtent  ){
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  // El metodo dispose se usa cuando se destruye una pantalla, para limpiar las dependencias
+  // Todos los controladores tienen un metodo dispose
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 350,
       child: Column(children: [
-        if (title != null || subTitle != null)
+        if (widget.title != null || widget.subTitle != null)
           _Title(
-            title: title,
-            subTitle: subTitle,
+            title: widget.title,
+            subTitle: widget.subTitle,
           ),
         Expanded(
             child: ListView.builder(
-          itemCount: movies.length,
+              controller: scrollController,
+          itemCount: widget.movies.length,
           scrollDirection: Axis.horizontal,
           // TODO:
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             // ITEMS
 
-            return _Slider(movie: movies[index]);
+            return Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: _Slider(movie: widget.movies[index]),
+            );
           },
         ))
       ]),
@@ -68,11 +102,22 @@ class _Slider extends StatelessWidget {
                   width: 150,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress != null) {
-                      return const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                      return const SizedBox(
+                        height: 200,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 10,
+                                offset: Offset(0, 10))
+                          ], color: Colors.black12),
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
                           ),
                         ),
                       );

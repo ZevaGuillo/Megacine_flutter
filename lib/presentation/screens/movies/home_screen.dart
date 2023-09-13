@@ -34,7 +34,7 @@ class _HomeViewState extends ConsumerState<_HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    // final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final moviesSlideshow = ref.watch(moviesSlideShowProvider);
 
     return Column(
@@ -42,9 +42,13 @@ class _HomeViewState extends ConsumerState<_HomeView> {
         const CustomAppbar(),
         MoviesSlideshow(movies: moviesSlideshow),
         MovieHorizontalListView(
-          movies: moviesSlideshow,
+          movies: nowPlayingMovies,
           title: 'En Cines',
           subTitle: 'Lunes 20',
+          // Metodo para hacer el scroll infinito, utilizado dentro del scrollController
+          loadNextPage: () {
+            ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+          },
         )
       ],
     );
