@@ -17,22 +17,23 @@ class MovieHorizontalListView extends StatefulWidget {
       this.loadNextPage});
 
   @override
-  State<MovieHorizontalListView> createState() => _MovieHorizontalListViewState();
+  State<MovieHorizontalListView> createState() =>
+      _MovieHorizontalListViewState();
 }
 
 class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
-
   final scrollController = ScrollController();
 
   // Configuracionde inicial antes de montar el widget
-  // En el caso de manejar controladores se deben definir los eventos principales 
+  // En el caso de manejar controladores se deben definir los eventos principales
   @override
   void initState() {
     super.initState();
     scrollController.addListener(() {
-      if( widget.loadNextPage == null ) return ;
+      if (widget.loadNextPage == null) return;
 
-      if( (scrollController.position.pixels + 200) >= scrollController.position.maxScrollExtent  ){
+      if ((scrollController.position.pixels + 200) >=
+          scrollController.position.maxScrollExtent) {
         widget.loadNextPage!();
       }
     });
@@ -58,7 +59,7 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
           ),
         Expanded(
             child: ListView.builder(
-              controller: scrollController,
+          controller: scrollController,
           itemCount: widget.movies.length,
           scrollDirection: Axis.horizontal,
           // TODO:
@@ -68,7 +69,7 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
 
             return Padding(
               padding: const EdgeInsets.only(top: 5.0),
-              child: _Slider(movie: widget.movies[index]),
+              child: FadeInRight(child: _Slider(movie: widget.movies[index])),
             );
           },
         ))
